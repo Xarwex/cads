@@ -124,11 +124,11 @@ object Sudoku {
               while (!partial.canPlay(i, j, d) && d < 10)
                 d += 1
 
-              if (d < 10) {
-                val p1 = partial.play(i, j, d)
-                stackPool.add(p1)
-              }
-
+              for (d <- 1 to 9)
+                if (partial.canPlay(i, j, d)) {
+                  val p1 = partial.play(i, j, d);
+                  stackPool.add(p1)
+                }
             }
 
           case None =>
@@ -157,11 +157,11 @@ object Sudoku {
     val t0 = System.currentTimeMillis()
 
     // options
-    var count = 1 // number of tests
+    var count = 10 // number of tests
     var fname = "impossible.sud" // filename
     var adv = false // are we using the AdvancedPartial?
-    var all = true // are we doing all files in allFiles?
-    var allPoss = false // are we doing all files in allPossibleFiles?
+    var all = false // are we doing all files in allFiles?
+    var allPoss = true // are we doing all files in allPossibleFiles?
     // parse command line arguments
     var i = 0
     while (i < args.length) {
