@@ -119,11 +119,6 @@ object Sudoku {
             } else {
               val (i, j) = partial.nextPos
 
-              // Could optimize further by creating random permutation maybe?
-              var d = 1
-              while (!partial.canPlay(i, j, d) && d < 10)
-                d += 1
-
               for (d <- 1 to 9)
                 if (partial.canPlay(i, j, d)) {
                   val p1 = partial.play(i, j, d);
