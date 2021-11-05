@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger, AtomicIntegerA
 object ConcurrentSieve {
 
   // I have used abomination whiles for fun :)
-  val numPrimes = 1000 // Number of primes to be generated
-  val numWorkers = 10 /// Number of workers
+  val numPrimes = 1000000 // Number of primes to be generated
+  val numWorkers = 16 /// Number of workers
 
   val candidate = new AtomicInteger(2)
   val primes = new AtomicIntegerArray(numPrimes)
@@ -18,19 +18,21 @@ object ConcurrentSieve {
 
   def insertPrime(v: Int): Unit = {
 
-    primesGenerated.incrementAndGet()
     var value = v
-    var index = 0
+    var index = primesGenerated.incrementAndGet() - 1
+    synchronized {
+      while ( {
+        if (index > numPrimes - 1 || index == 0) false
+        else {
+          val p = primes.get(index - 1)
+          p > value || p == 0
+        }
+      }) index -= 1
 
-    while ( {
-      if (index == numPrimes) return false
-      val p = primes.get(index)
-      p < value && p != 0
-    }) index += 1
-
-    while (index < numPrimes && value != 0) {
-      value = primes.getAndSet(index, value)
-      index += 1
+      while (index < numPrimes && value != 0) {
+        value = primes.getAndSet(index, value)
+        index += 1
+      }
     }
   }
 
@@ -47,6 +49,7 @@ object ConcurrentSieve {
 
   def worker(me: Int): Unit = {
     while (primesGenerated.get() < numPrimes) {
+      val primes = primesGenerated.get()
       current.set(me, candidate.getAndIncrement())
       val myCandidate = current.get(me)
 
@@ -67,12 +70,15 @@ object ConcurrentSieve {
     completed.getAndIncrement()
     if (me == 0) {
       while (completed.get() != numWorkers) {}
-      for (i <- 0 until numPrimes)
-        System.out.println((i + 1) + ": " + primes.get(i))
+//      for (i <- 0 until numPrimes)
+//        System.out.println((i + 1) + ": " + primes.get(i))
+            System.out.println(numPrimes + ": " + primes.get(numPrimes - 1))
     }
   }
 
   def main(args: Array[String]): Unit = {
+    val t0 = java.lang.System.currentTimeMillis()
     ThreadUtil.runIndexedSystem(numWorkers, worker)
+    println("Time taken: " + (java.lang.System.currentTimeMillis() - t0))
   }
 }

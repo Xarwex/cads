@@ -6,7 +6,7 @@ object Sieve{
     //assert(args.length == 1, "must have one argument")
     val t0 = java.lang.System.currentTimeMillis()
 
-    val N = 1000 //args(0).toInt // number of primes required
+    val N = 1000000 //args(0).toInt // number of primes required
     val primes = new Array[Int](N) // will hold the primes
     primes(0) = 2
     var nextSlot = 1 // next free slot in primes
