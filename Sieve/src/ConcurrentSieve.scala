@@ -18,6 +18,7 @@ object ConcurrentSieve {
 
   def insertPrime(v: Int): Unit = {
 
+    // Use compare and set to check if the value is smaller :))
     var value = v
     var index = primesGenerated.incrementAndGet() - 1
     synchronized {
@@ -49,9 +50,9 @@ object ConcurrentSieve {
 
   def worker(me: Int): Unit = {
     while (primesGenerated.get() < numPrimes) {
-      val primes = primesGenerated.get()
-      current.set(me, candidate.getAndIncrement())
-      val myCandidate = current.get(me)
+
+      val myCandidate = candidate.getAndIncrement()
+      current.set(me, myCandidate)
 
       var canProceed = false
       while (!canProceed) {
