@@ -49,36 +49,36 @@ object SimpleQueueTest {
 
   def main(args: Array[String]) = {
     // parse arguments
-    var verbose = false;
+    var verbose = false
     var i = 0
     var reps = 1250 // Number of repetitions
-    var p = 4 // Number of workers
-    while (i < args.length) {
-      if (queues.contains(args(i))) {
-        queueType = args(i).drop(2);
-        i += 1
-      }
-      else if (args(i) == "-p") {
-        p = args(i + 1).toInt;
-        i += 2
-      }
-      else if (args(i) == "--iters") {
-        iters = args(i + 1).toInt;
-        i += 2
-      }
-      else if (args(i) == "--reps") {
-        reps = args(i + 1).toInt;
-        i += 2
-      }
-      else if (args(i) == "--enqueueProb") {
-        enqueueProb = args(i + 1).toDouble;
-        i += 2
-      }
-      else sys.error("Usage:\n" + usage.stripMargin)
-    }
+    var p = 2 // Number of workers
+//    while (i < args.length) {
+//      if (queues.contains(args(i))) {
+//        queueType = args(i).drop(2);
+//        i += 1
+//      }
+//      else if (args(i) == "-p") {
+//        p = args(i + 1).toInt;
+//        i += 2
+//      }
+//      else if (args(i) == "--iters") {
+//        iters = args(i + 1).toInt;
+//        i += 2
+//      }
+//      else if (args(i) == "--reps") {
+//        reps = args(i + 1).toInt;
+//        i += 2
+//      }
+//      else if (args(i) == "--enqueueProb") {
+//        enqueueProb = args(i + 1).toDouble;
+//        i += 2
+//      }
+//      else sys.error("Usage:\n" + usage.stripMargin)
+//    }
 
     // Now run the tests
-    val t0 = java.lang.System.nanoTime
+    //val t0 = java.lang.System.nanoTime
     var r = 0
     var result = 1
     while (r < reps && result > 0) {
@@ -89,17 +89,17 @@ object SimpleQueueTest {
 //        case "recycle" => new ox.cads.collection.LockFreeQueueRecycle[Int](p)
 //        case "unbounded" => new ox.cads.collection.UnboundedQueue[Int]
 //      }
-      val concQueue = new LinkedArrayListLock[Int]
+      val concQueue = new LinkedArrayListLockFree[Int]
 
       // Create and run the tester object
       val tester = LinearizabilityTester.JITGraph[SeqQueue, ConcQueue](
         seqQueue, concQueue, p, worker, iters)
+
       result = tester()
       r += 1
       if (r % 100 == 0) print(".")
     } // end of for loop
-    val t1 = java.lang.System.nanoTime
-    println("\nTime taken: " + (t1 - t0) / 1000000 + "ms")
+    //val t1 = java.lang.System.nanoTime
+    //println("\nTime taken: " + (t1 - t0) / 1000000 + "ms")
   }
-
 }

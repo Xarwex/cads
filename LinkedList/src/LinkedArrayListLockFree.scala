@@ -1,5 +1,3 @@
-import ox.cads.locks.Lock
-
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
 import scala.reflect.ClassTag
 
@@ -15,7 +13,11 @@ class LinkedArrayListLockFree[T: ClassTag] extends ox.cads.collection.Queue[T] {
     val enqIndex = new AtomicInteger(0)
     val deqIndex = new AtomicInteger(0)
 
-    data.foreach(elem => elem.set(null.asInstanceOf[T]))
+    for (i <- 0 until size) {
+      data(i) = new AtomicReference[T]
+      data(i).set(null.asInstanceOf[T])
+    }
+
   }
 
   private val firstNode = new Node
